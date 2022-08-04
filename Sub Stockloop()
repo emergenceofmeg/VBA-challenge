@@ -1,0 +1,198 @@
+Sub Stockloop()
+
+' Set Ws as a worksheet object variable.
+    
+    Dim ActiveWs As Worksheet
+    Dim ResultsTitle As Boolean
+    Dim FunctionTable As Boolean
+   
+    ResultsTitle = True
+    FunctionTable = True
+    
+    ' Loop through all of the worksheets in the active workbook.
+    For Each ActiveWs In Worksheets
+    
+        ' Set initial variable for holding the ticker name
+        Dim TickerName As String
+        TickerName = " "
+        
+        Dim TickerStock As Double
+        TickerStock = 0
+
+        
+        ' Set new variables for calculations
+        
+        Dim firstPrice As Double
+        firstPrice = 0
+        
+        Dim endPrice As Double
+        endPrice = 0
+        
+        Dim ChagePrice As Double
+        ChangePrice = 0
+        
+        Dim ChangePercent As Double
+        ChangePercent = 0
+        
+        Dim MaxTickerName As String
+        MaxTickerName = " "
+        
+        Dim MinTickerName As String
+        MinTickerName = " "
+        
+        Dim MaxPercent As Double
+        MaxPercent = 0
+        
+        Dim MinPercent As Double
+        MinPercent = 0
+        
+        Dim MaxTickerStock As String
+        MaxTickerStock = " "
+        
+        Dim MaxVolume As Double
+        MaxVolume = 0
+        
+        
+        'Track location of each ticker
+        Dim ResultsRow As Long
+        ResultsRow = 2
+        
+        Dim LastRow As Long
+        Dim i As Long
+        
+        LastRow = ActiveWs.Cells(Rows.Count, 1).End(xlUp).Row
+
+         'Titles for the Results for current worksheet
+         
+            If ResultsTitle Then
+    
+                ActiveWs.Range("I1").Value = "Ticker"
+                ActiveWs.Range("J1").Value = "Yearly Change"
+                ActiveWs.Range("K1").Value = "Percent Change"
+                ActiveWs.Range("L1").Value = "Total Stock Volume"
+            
+                ActiveWs.Range("O2").Value = "Greatest % Increase"
+                ActiveWs.Range("O3").Value = "Greatest % Decrease"
+                ActiveWs.Range("O4").Value = "Greatest Total Volume"
+                ActiveWs.Range("P1").Value = "Ticker"
+                ActiveWs.Range("Q1").Value = "Value"
+        
+            Else
+        
+                ResultsTitle = False
+            
+        
+            End If
+        
+            firstPrice = ActiveWs.Cells(2, 3).Value
+        
+        For i = 2 To LastRow
+            
+    
+            If ActiveWs.Cells(i + 1, 1).Value <> ActiveWs.Cells(i, 1).Value Then
+                TickerName = ActiveWs.Cells(i, 1).Value
+                endPrice = ActiveWs.Cells(i, 6).Value
+                ChangePrice = endPrice - firstPrice
+            
+            If firstPrice <> 0 Then
+                
+                ChangePercent = (ChangePrice / firstPrice) * 100
+            
+            End If
+            
+            TickerStock = TickerStock + ActiveWs.Cells(i, 7).Value
+
+            
+            ActiveWs.Range("I" & ResultsRow).Value = TickerName
+            ActiveWs.Range("J" & ResultsRow).Value = ChangePrice
+            
+            'Format red and green color
+            If (ChangePrice > 0) Then
+                ActiveWs.Range("J" & ResultsRow).Interior.ColorIndex = 4
+            ElseIf (ChangePrice <= 0) Then
+                ActiveWs.Range("J" & ResultsRow).Interior.ColorIndex = 3
+            End If
+            
+            
+            ActiveWs.Range("K" & ResultsRow).Value = (CStr(ChangePercent) & "%")
+            ActiveWs.Range("L" & ResultsRow).Value = TickerStock
+            
+            ResultsRow = ResultsRow + 1
+            
+          
+            
+            firstPrice = ActiveWs.Cells(i + 1, 3).Value
+            
+            If (ChangePercent > MaxPercent) Then
+                
+                MaxPercent = ChangePercent
+                MaxTickerName = TickerName
+            
+            ElseIf (ChangePercent < MinPercent) Then
+                
+                MinPercent = ChangePercent
+                MinTickerName = TickerName
+            
+            End If
+            
+            If (TickerStock > MaxVolume) Then
+                
+                MaxVolume = TickerStock
+                MaxTickerStock = TickerName
+                
+            End If
+            
+                ChangePercent = 0
+                TickerStock = 0
+            
+            Else
+            
+                TickerStock = TickerStock + ActiveWs.Cells(i, 7).Value
+                
+                
+             End If
+              
+        
+        Next i
+        
+        If FunctionTable Then
+        
+                ActiveWs.Range("Q2").Value = (CStr(MaxPercent) & "%")
+                
+                ActiveWs.Range("Q3").Value = (CStr(MinPercent) & "%")
+                
+                ActiveWs.Range("P2").Value = MaxTickerName
+                
+                ActiveWs.Range("P3").Value = MinTickerName
+                
+                ActiveWs.Range("Q4").Value = MaxVolume
+                
+                ActiveWs.Range("P4").Value = MaxTickerStock
+                
+                
+            Else
+            
+                FunctionTable = False
+                
+            End If
+        
+     Next ActiveWs
+    
+            
+                
+            
+
+     
+     End Sub
+     
+
+
+Sub Multiyearstock()
+'
+' Multiyearstock Macro
+' Data Science Boot Camp Module 2 Challenge
+'
+' Keyboard Shortcut: Ctrl+Shift+M
+'
+    Application.Run "Multiple_year_stock_data.xlsm!Stockloop"
+End Sub
